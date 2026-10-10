@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Swarnkar Goonj 2026 Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 18px;
+      background: #f5f6fa;
+    }
+    .card {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+    }
+    input, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    button { cursor: pointer; }
+    .person {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    #status { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>Swarnkar Goonj 2026</h2>
+  <p>एक बार में अधिकतम 10 लोगों का रजिस्ट्रेशन करें।</p>
+
+  <label>रजिस्ट्रेशन करने वाले का नाम</label>
+  <input id="addedBy" placeholder="अपना नाम लिखें">
+
+  <button type="button" onclick="pickContacts()">
+    📱 Select Contacts
+  </button>
+
+  <p id="support"></p>
+  <div id="people"></div>
+
+  <button type="button" onclick="addManual()">
+    + नाम और नंबर मैन्युअल जोड़ें
+  </button>
+
+  <button type="button" onclick="submitPeople()">
+    Submit Registration
+  </button>
+
+  <p id="status"></p>
+</div>
+
+<script>
+const SCRIPT_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbxi72MDzRuwsY9atVqUxz_QBJWLdwqdCujxrB68Zust-0DbkgVBEwHOWOxQsbe6XNcl/exec";
+
+let people = [];
+
+function renderPeople() {
+  const container = document.getElementById("people");
+  container.innerHTML = "";
+
+  people.forEach((p, i) => {
+    const card = document.createElement("div");
+    card.className = "person";
+
+    const name = document.createElement("input");
+    name.placeholder = "पूरा नाम";
+    name.value = p.name;
+    name.setAttribute("aria-label", "नाम " + (i + 1));
+    name.oninput = () => people[i].name = name.value;
+
+    const mobile = document.createElement("input");
+    mobile.placeholder = "मोबाइल नंबर";
+    mobile.type = "tel";
+    mobile.value = p.mobile;
+    mobile.setAttribute("aria-label", "मोबाइल नंबर " + (i + 1));
+    mobile.oninput = () => people[i].mobile = mobile.value;
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "इस व्यक्ति को हटाएँ";
+    remove.onclick = () => {
+      people.splice(i, 1);
+      renderPeople();
+    };
+
+    card.append(name, mobile, remove);
+    container.appendChild(card);
+  });
+
+  document.getElementById("status").textContent =
+    people.length + " / 10 लोग चुने गए";
+}
+
+async function pickContacts() {
+  const status = document.getElementById("status");
+
+  if (!("contacts" in navigator) ||
+      !navigator.contacts.select) {
+    document.getElementById("support").textContent =
+      "इस ब्राउज़र में Contact Picker उपलब्ध नहीं है। " +
+      "नीचे मैन्युअल विकल्प से जानकारी भरें।";
+    return;
+  }
+
+  try {
+    const contacts = await navigator.contacts.select(
+      ["name", "tel"],
+      { multiple: true }
+    );
+
+    const remaining = 10 - people.length;
+    const selected = contacts.slice(0, remaining);
+
+    selected.forEach(c => {
+      const phone = Array.isArray(c.tel) ? c.tel[0] : "";
+      const name = Array.isArray(c.name) ? c.name[0] : "";
+
+      if (phone) {
+        people.push({
+          name: name || "",
+          mobile: phone
+        });
+      }
+    });
+
+    renderPeople();
+
+    if (contacts.length > remaining) {
+      status.textContent =
+        "एक बार में अधिकतम 10 लोग रखे जा सकते हैं।";
+    }
+  } catch (err) {
+    status.textContent =
+      "Contacts नहीं चुने जा सके। आप मैन्युअल जानकारी भर सकते हैं।";
+  }
+}
+
+function addManual() {
+  if (people.length >= 10) {
+    alert("अधिकतम 10 लोग ही जोड़ सकते हैं।");
+    return;
+  }
+  people.push({ name: "", mobile: "" });
+  renderPeople();
+}
+
+async function submitPeople() {
+  const status = document.getElementById("status");
+  const addedBy = document.getElementById("addedBy").value.trim();
+
+  if (!addedBy) {
+    alert("कृपया अपना नाम भरें।");
+    return;
+  }
+  if (!people.length || people.length > 10) {
+    alert("कम-से-कम 1 और अधिकतम 10 लोगों को जोड़ें।");
+    return;
+  }
+  if (people.some(p => !p.name.trim() || !p.mobile.trim())) {
+    alert("सभी लोगों के नाम और मोबाइल नंबर भरें।");
+    return;
+  }
+
+  const payload = new URLSearchParams();
+  payload.set("payload", JSON.stringify({
+    addedBy,
+    people: people.map(p => ({
+      name: p.name.trim(),
+      mobile: p.mobile.trim()
+    }))
+  }));
+
+  status.textContent = "Registration भेजा जा रहा है…";
+
+  try {
+    await fetch(SCRIPT_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: payload
+    });
+
+    status.textContent =
+      "Registration request भेज दी गई है। कृपया Google Sheet में " +
+      "जाँच लें कि रिकॉर्ड सेव हुए हैं। इस ब्राउज़र मोड में " +
+      "सेव होने की पुष्टि सीधे नहीं पढ़ी जा सकती।";
+  } catch (err) {
+    status.textContent =
+      "Request भेजने में समस्या हुई। इंटरनेट और Web App URL जाँचें।";
+  }
+}
+
+renderPeople();
+</script>
+</body>
+</html>
