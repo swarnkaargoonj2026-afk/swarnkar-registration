@@ -1,25 +1,29 @@
 
-
 <!DOCTYPE html>
 <html lang="hi">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Swarnkar Goonj 2026 Registration</title>
+
+  <!-- PDF बनाने की लाइब्रेरी -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial, "Noto Sans Devanagari", sans-serif;
       max-width: 600px;
       margin: 0 auto;
       padding: 18px;
       background: #f5f6fa;
     }
+
     .card {
       background: white;
       padding: 18px;
       border-radius: 14px;
     }
+
     input, button {
       box-sizing: border-box;
       width: 100%;
@@ -27,74 +31,158 @@
       margin: 6px 0;
       font-size: 16px;
     }
+
     button { cursor: pointer; }
+
     .person {
       border: 1px solid #ddd;
       padding: 10px;
       border-radius: 8px;
       margin: 10px 0;
     }
-    #status { white-space: pre-wrap; }
+
+    #status {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    /* PDF poster को स्क्रीन से बाहर रखें, लेकिन render करने योग्य */
+    #posterArea {
+      position: fixed;
+      left: -10000px;
+      top: 0;
+      width: 700px;
+      background: white;
+      z-index: -1;
+    }
+
+    #poster {
+      width: 700px;
+      box-sizing: border-box;
+      padding: 32px;
+      background: #fffdf6;
+      color: #222;
+      font-family: Arial, "Noto Sans Devanagari", sans-serif;
+      border: 8px double #9b681c;
+    }
+
+    #poster .poster-header {
+      text-align: center;
+      border-bottom: 3px solid #9b681c;
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+    }
+
+    #poster .poster-header h1 {
+      color: #8a4b08;
+      font-size: 30px;
+      margin: 0 0 12px;
+    }
+
+    #poster .poster-header h2 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    #poster .poster-by {
+      font-size: 17px;
+      margin: 18px 0 8px;
+    }
+
+    #poster .poster-count {
+      font-size: 15px;
+      margin: 8px 0 18px;
+    }
+
+    #poster table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+
+    #poster th, #poster td {
+      border: 1px solid #9b681c;
+      padding: 9px 7px;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    #poster th {
+      background: #f0dfb8;
+    }
+
+    #poster .poster-footer {
+      text-align: center;
+      border-top: 2px solid #9b681c;
+      margin-top: 22px;
+      padding-top: 12px;
+      font-size: 14px;
+    }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-  
+
 <body>
-<div class="card">
-  <h2>Swarnkar Goonj 2026</h2>
-  <p>एक बार में अधिकतम 10 लोगों का रजिस्ट्रेशन करें।</p>
+  <div class="card">
+    <h2>Swarnkar Goonj 2026</h2>
+    <p>एक बार में अधिकतम 10 लोगों का रजिस्ट्रेशन करें।</p>
 
-  <label>रजिस्ट्रेशन करने वाले का नाम</label>
-  <input id="addedBy" placeholder="अपना नाम लिखें">
+    <label for="addedBy">रजिस्ट्रेशन करने वाले का नाम</label>
+    <input id="addedBy" placeholder="अपना नाम लिखें">
 
-  <button type="button" onclick="pickContacts()">
-    📱 Select Contacts
-  </button>
+    <button type="button" onclick="pickContacts()">
+      📱 Select Contacts
+    </button>
 
-  <p id="support"></p>
-  <div id="people"></div>
+    <p id="support"></p>
+    <div id="people"></div>
 
-  <button type="button" onclick="addManual()">
-    + नाम और नंबर मैन्युअल जोड़ें
-  </button>
+    <button type="button" onclick="addManual()">
+      + नाम और नंबर मैन्युअल जोड़ें
+    </button>
 
-  <button type="button" onclick="submitPeople()">
-    Submit Registration
-  </button>
+    <button type="button" id="submitBtn" onclick="submitPeople()">
+      Submit Registration & Download Poster
+    </button>
 
-  <p id="status"></p>
-</div>
-<div id="people"></div>
-  <div id="poster" style="
-  width: 700px;
-  box-sizing: border-box;
-  padding: 32px;
-  background: #fff8e9;
-  color: #523b20;
-  font-family: Arial, sans-serif;
-  border: 5px solid #b58a42;
-">
-  <h1 style="text-align:center;color:#80531a">
-    SWARNKAR GOONJ 2026
-  </h1>
-  <h2 style="text-align:center">सदस्य पंजीकरण</h2>
-  <p id="posterBy"></p>
-  <p id="posterCount"></p>
-  <table style="width:100%;border-collapse:collapse">
-    <thead>
-      <tr>
-        <th style="border:1px solid #b58a42;padding:8px">क्रम</th>
-        <th style="border:1px solid #b58a42;padding:8px">नाम</th>
-        <th style="border:1px solid #b58a42;padding:8px">मोबाइल नंबर</th>
-      </tr>
-    </thead>
-    <tbody id="posterRows"></tbody>
-  </table>
-  <p style="text-align:center;margin-top:24px">
-    Swarnkar Goonj 2026 • सदस्यता अभियान
-  </p>
-</div>
-  
+    <p id="status" role="status"></p>
+  </div>
+
+  <!-- PDF के लिए poster; स्क्रीन पर दिखाई नहीं देगा -->
+  <div id="posterArea" aria-hidden="true">
+    <div id="poster">
+      <div class="poster-header">
+        <h1>SWARNKAR GOONJ 2026</h1>
+        <h2>सदस्य पंजीकरण सूची</h2>
+      </div>
+
+      <div class="poster-by">
+        <strong>रजिस्ट्रेशन करने वाले:</strong>
+        <span id="posterBy"></span>
+      </div>
+
+      <div class="poster-count">
+        <strong>कुल सदस्य:</strong>
+        <span id="posterCount"></span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 10%;">क्रम</th>
+            <th style="width: 48%;">सदस्य का नाम</th>
+            <th style="width: 42%;">मोबाइल नंबर</th>
+          </tr>
+        </thead>
+        <tbody id="posterRows"></tbody>
+      </table>
+
+      <div class="poster-footer">
+        Swarnkar Goonj 2026 — सदस्य पंजीकरण
+      </div>
+    </div>
+  </div>
+
 <script>
 const SCRIPT_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbxi72MDzRuwsY9atVqUxz_QBJWLdwqdCujxrB68Zust-0DbkgVBEwHOWOxQsbe6XNcl/exec";
@@ -113,14 +201,18 @@ function renderPeople() {
     name.placeholder = "पूरा नाम";
     name.value = p.name;
     name.setAttribute("aria-label", "नाम " + (i + 1));
-    name.oninput = () => people[i].name = name.value;
+    name.oninput = () => {
+      people[i].name = name.value;
+    };
 
     const mobile = document.createElement("input");
     mobile.placeholder = "मोबाइल नंबर";
     mobile.type = "tel";
     mobile.value = p.mobile;
     mobile.setAttribute("aria-label", "मोबाइल नंबर " + (i + 1));
-    mobile.oninput = () => people[i].mobile = mobile.value;
+    mobile.oninput = () => {
+      people[i].mobile = mobile.value;
+    };
 
     const remove = document.createElement("button");
     remove.type = "button";
@@ -135,16 +227,16 @@ function renderPeople() {
   });
 
   document.getElementById("status").textContent =
-    people.length + " / 10 लोग चुने गए";
+    people.length + " / 10 लोग चुने गए।";
 }
-
 
 async function pickContacts() {
   const status = document.getElementById("status");
 
   if (!navigator.contacts ||
       typeof navigator.contacts.select !== "function") {
-    status.textContent = "Contact Picker उपलब्ध नहीं है।";
+    status.textContent =
+      "Contact Picker उपलब्ध नहीं है। समर्थित मोबाइल ब्राउज़र में प्रयास करें।";
     return;
   }
 
@@ -165,7 +257,8 @@ async function pickContacts() {
         ? (c.tel[0] || "")
         : (c.tel || "");
 
-      if (name.trim() || mobile.trim()) {
+      if ((name.trim() || mobile.trim()) &&
+          people.length < 10) {
         people.push({
           name: name.trim(),
           mobile: mobile.trim()
@@ -174,116 +267,94 @@ async function pickContacts() {
     });
 
     renderPeople();
-
     status.textContent =
       people.length + " / 10 लोग जोड़े गए।";
-
   } catch (error) {
     status.textContent =
       "Contacts चुनने में समस्या: " + error.message;
   }
 }
 
-
 function addManual() {
   if (people.length >= 10) {
     alert("अधिकतम 10 लोग ही जोड़ सकते हैं।");
     return;
   }
+
   people.push({ name: "", mobile: "" });
   renderPeople();
 }
 
-async function submitPeople() {
-  const status = document.getElementById("status");
-  const addedBy = document.getElementById("addedBy").value.trim();
+function preparePoster(addedBy, members) {
+  document.getElementById("posterBy").textContent = addedBy;
+  document.getElementById("posterCount").textContent =
+    String(members.length);
 
-  if (!addedBy) {
-    alert("कृपया अपना नाम भरें।");
-    return;
-  }
-if (!people.length || people.length > 10) {
-  alert("Submit के समय लोगों की संख्या: " + people.length);
-  return;
-}
-  if (people.some(p => !p.name.trim() || !p.mobile.trim())) {
-    alert("सभी लोगों के नाम और मोबाइल नंबर भरें।");
-    return;
-  }
+  const tbody = document.getElementById("posterRows");
+  tbody.innerHTML = "";
 
-  const payload = new URLSearchParams();
-  payload.set("payload", JSON.stringify({
-    addedBy,
-    people: people.map(p => ({
-      name: p.name.trim(),
-      mobile: p.mobile.trim()
-    }))
-  }));
+  members.forEach((person, index) => {
+    const tr = document.createElement("tr");
 
-  status.textContent = "Registration भेजा जा रहा है…";
-
-  try {
-    await fetch(SCRIPT_WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: payload
+    [String(index + 1), person.name, person.mobile].forEach(value => {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
     });
 
-    status.textContent =
-      "Registration request भेज दी गई है। कृपया Google Sheet में " +
-      "जाँच लें कि रिकॉर्ड सेव हुए हैं। इस ब्राउज़र मोड में " +
-      "सेव होने की पुष्टि सीधे नहीं पढ़ी जा सकती।";
-  } catch (err) {
-    status.textContent =
-      "Request भेजने में समस्या हुई। इंटरनेट और Web App URL जाँचें।";
+    tbody.appendChild(tr);
+  });
+}
+
+async function downloadPoster(addedBy, members) {
+  if (typeof html2pdf !== "function") {
+    throw new Error(
+      "PDF लाइब्रेरी लोड नहीं हुई। इंटरनेट कनेक्शन जाँचें और पेज दोबारा खोलें।"
+    );
   }
 
-  
-<div id="poster" style="
-  width: 700px;
-  box-sizing: border-box;
-  padding: 32px;
-  background: #fff8e9;
-  color: #523b20;
-  font-family: Arial, sans-serif;
-  border: 5px solid #b58a42;
-">
-  <h1 style="text-align:center;color:#80531a">
-    SWARNKAR GOONJ 2026
-  </h1>
-  <h2 style="text-align:center">सदस्य पंजीकरण</h2>
-  <p id="posterBy"></p>
-  <p id="posterCount"></p>
-  <table style="width:100%;border-collapse:collapse">
-    <thead>
-      <tr>
-        <th style="border:1px solid #b58a42;padding:8px">क्रम</th>
-        <th style="border:1px solid #b58a42;padding:8px">नाम</th>
-        <th style="border:1px solid #b58a42;padding:8px">मोबाइल नंबर</th>
-      </tr>
-    </thead>
-    <tbody id="posterRows"></tbody>
-  </table>
-  <p style="text-align:center;margin-top:24px">
-    Swarnkar Goonj 2026 • सदस्यता अभियान
-  </p>
-</div>
-```
+  preparePoster(addedBy, members);
 
-**तीसरे**, अपने `submitPeople()` फ़ंक्शन को नीचे दिए गए फ़ंक्शन से बदलें। यह पहले रजिस्ट्रेशन डेटा भेजेगा और फिर उसी जानकारी से PDF डाउनलोड बनाने की कोशिश करेगा।
+  // PDF बनाने से पहले poster को browser में render होने दें
+  await new Promise(resolve => requestAnimationFrame(resolve));
 
-<CodeBlock language="javascript" editable>
+  const element = document.getElementById("poster");
+
+  await html2pdf()
+    .set({
+      margin: [8, 8, 8, 8],
+      filename: "Swarnkar_Goonj_2026_Poster.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#fffdf6",
+        scrollX: 0,
+        scrollY: 0
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait"
+      },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+    })
+    .from(element)
+    .save();
+}
+
 async function submitPeople() {
   const status = document.getElementById("status");
+  const submitBtn = document.getElementById("submitBtn");
   const addedBy = document.getElementById("addedBy").value.trim();
 
   if (!addedBy) {
-    alert("कृपया अपना नाम भरें।");
+    alert("कृपया रजिस्ट्रेशन करने वाले का नाम भरें।");
     return;
   }
 
   if (!people.length || people.length > 10) {
-    alert("कम-से-कम 1 और अधिकतम 10 लोगों को जोड़ें।");
+    alert("कम से कम 1 और अधिकतम 10 लोगों को जोड़ें।");
     return;
   }
 
@@ -292,55 +363,47 @@ async function submitPeople() {
     return;
   }
 
-  if (typeof html2pdf === "undefined") {
-    alert("PDF लाइब्रेरी लोड नहीं हुई। इंटरनेट जाँचें और दोबारा कोशिश करें।");
-    return;
-  }
-
-  // पोस्टर में नाम और नंबर भरें
-  document.getElementById("posterBy").textContent =
-    "Registration By: " + addedBy;
-
-  document.getElementById("posterCount").textContent =
-    "कुल सदस्य: " + people.length;
-
-  const rows = document.getElementById("posterRows");
-  rows.replaceChildren();
-
-  people.forEach((p, i) => {
-    const tr = document.createElement("tr");
-
-    [String(i + 1), p.name.trim(), p.mobile.trim()].forEach(value => {
-      const td = document.createElement("td");
-      td.textContent = value;
-      td.style.border = "1px solid #b58a42";
-      td.style.padding = "8px";
-      tr.appendChild(td);
-    });
-
-    rows.appendChild(tr);
-  });
-
-  // Google Sheet में डेटा भेजें
-  const payload = new URLSearchParams();
-  payload.set("payload", JSON.stringify({
-    addedBy,
-    people: people.map(p => ({
-      name: p.name.trim(),
-      mobile: p.mobile.trim()
-    }))
+  const members = people.map(p => ({
+    name: p.name.trim(),
+    mobile: p.mobile.trim()
   }));
 
-  status.textContent = "रजिस्ट्रेशन भेजा जा रहा है…";
+  const payload = new URLSearchParams();
+  payload.set("payload", JSON.stringify({
+    addedBy: addedBy,
+    people: members
+  }));
+
+  submitBtn.disabled = true;
+  status.textContent =
+    "रजिस्ट्रेशन अनुरोध भेजा जा रहा है…";
 
   try {
+    // Google Apps Script को डेटा भेजें
     await fetch(SCRIPT_WEB_APP_URL, {
       method: "POST",
       mode: "no-cors",
       body: payload
     });
-}}
 
+    status.textContent =
+      "अनुरोध भेज दिया गया है। अब PDF तैयार हो रही है…";
+
+    // भेजे गए डेटा से PDF बनाएँ
+    await downloadPoster(addedBy, members);
+
+    status.textContent =
+      "PDF डाउनलोड शुरू हो गया है। Google Sheet में रिकॉर्ड भी जाँच लें; " +
+      "इस ब्राउज़र मोड में सेव होने की पुष्टि सीधे नहीं पढ़ी जा सकती।";
+
+  } catch (error) {
+    status.textContent =
+      "PDF बनाने या अनुरोध भेजने में समस्या हुई: " +
+      (error.message || error);
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
 
 renderPeople();
 </script>
