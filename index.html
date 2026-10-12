@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 <html lang="hi">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,6 +35,7 @@
     #status { white-space: pre-wrap; }
   </style>
 </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <body>
 <div class="card">
   <h2>Swarnkar Goonj 2026</h2>
@@ -98,8 +98,6 @@ const SCRIPT_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbxi72MDzRuwsY9atVqUxz_QBJWLdwqdCujxrB68Zust-0DbkgVBEwHOWOxQsbe6XNcl/exec";
 
 let people = [];
-
-
   
 function renderPeople() {
   const container = document.getElementById("people");
@@ -286,7 +284,7 @@ async function submitPeople() {
       "PDF बनाने में समस्या हुई: " + error.message;
   }
 }
-renderPeople();
+  renderPeople();
 </script>
 </body>
 </html>
