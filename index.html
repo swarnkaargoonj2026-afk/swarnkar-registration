@@ -340,30 +340,7 @@ async function submitPeople() {
       body: payload
     });
 }}
-    // पोस्टर PDF डाउनलोड करें
-    const poster = document.getElementById("poster");
 
-    await html2pdf().set({
-      margin: 8,
-      filename: "Swarnkar_Goonj_2026_" +
-        addedBy.replace(/[^a-z0-9_-]/gi, "_") + ".pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait"
-      }
-    }).from(poster).save();
-
-    status.textContent =
-      "PDF डाउनलोड शुरू हो गया। Google Sheet में रजिस्ट्रेशन की पुष्टि भी करें।";
-
-  } catch (error) {
-    status.textContent =
-      "PDF बनाने में समस्या हुई: " + error.message;
-  }
-}
 
 renderPeople();
 </script>
