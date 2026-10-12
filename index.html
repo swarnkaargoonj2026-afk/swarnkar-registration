@@ -107,11 +107,23 @@ function renderPeople() {
 async function pickContacts() {
   const status = document.getElementById("status");
 
-  if (!("contacts" in navigator) ||
-      !navigator.contacts.select) {
-    document.getElementById("support").textContent =
-      "इस ब्राउज़र में Contact Picker उपलब्ध नहीं है। " +
-      "नीचे मैन्युअल विकल्प से जानकारी भरें।";
+  status.textContent =
+    "Secure context: " + window.isSecureContext +
+    "\nContact API available: " +
+    ("contacts" in navigator) +
+    "\nContact select available: " +
+    !!(navigator.contacts && navigator.contacts.select);
+
+  if (!window.isSecureContext) {
+    status.textContent +=
+      "\nError: HTTPS secure context required.";
+    return;
+  }
+
+  if (!navigator.contacts ||
+      typeof navigator.contacts.select !== "function") {
+    status.textContent +=
+      "\nError: This browser does not support Contact Picker.";
     return;
   }
 
@@ -121,32 +133,18 @@ async function pickContacts() {
       { multiple: true }
     );
 
-    const remaining = 10 - people.length;
-    const selected = contacts.slice(0, remaining);
-
-    selected.forEach(c => {
-      const phone = Array.isArray(c.tel) ? c.tel[0] : "";
-      const name = Array.isArray(c.name) ? c.name[0] : "";
-
-      if (phone) {
-        people.push({
-          name: name || "",
-          mobile: phone
-        });
-      }
-    });
-
-    renderPeople();
-
-    if (contacts.length > remaining) {
-      status.textContent =
-        "एक बार में अधिकतम 10 लोग रखे जा सकते हैं।";
-    }
-  } catch (err) {
     status.textContent =
-      "Contacts नहीं चुने जा सके। आप मैन्युअल जानकारी भर सकते हैं।";
+      "Selected contacts: " + contacts.length;
+
+    // नीचे अपना मौजूदा contacts-processing code रखें।
+
+  } catch (error) {
+    status.textContent =
+      "Contact Picker error: " +
+      error.name + " — " + error.message;
   }
 }
+
 
 function addManual() {
   if (people.length >= 10) {
