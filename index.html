@@ -1,6 +1,8 @@
 
+
 <!DOCTYPE html>
 <html lang="hi">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,7 +37,6 @@
     #status { white-space: pre-wrap; }
   </style>
 </head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <body>
 <div class="card">
   <h2>Swarnkar Goonj 2026</h2>
@@ -61,44 +62,13 @@
 
   <p id="status"></p>
 </div>
-<div id="people"></div>
-<div id="poster" style="
-  width: 700px;
-  box-sizing: border-box;
-  padding: 32px;
-  background: #fff8e9;
-  color: #523b20;
-  font-family: Arial, sans-serif;
-  border: 5px solid #b58a42;
-">
-  <h1 style="text-align:center;color:#80531a">
-    SWARNKAR GOONJ 2026
-  </h1>
-  <h2 style="text-align:center">सदस्य पंजीकरण</h2>
-  <p id="posterBy"></p>
-  <p id="posterCount"></p>
-  <table style="width:100%;border-collapse:collapse">
-    <thead>
-      <tr>
-        <th style="border:1px solid #b58a42;padding:8px">क्रम</th>
-        <th style="border:1px solid #b58a42;padding:8px">नाम</th>
-        <th style="border:1px solid #b58a42;padding:8px">मोबाइल नंबर</th>
-      </tr>
-    </thead>
-    <tbody id="posterRows"></tbody>
-  </table>
-  <p style="text-align:center;margin-top:24px">
-    Swarnkar Goonj 2026 • सदस्यता अभियान
-  </p>
-</div>
-  
-  
+
 <script>
 const SCRIPT_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbxi72MDzRuwsY9atVqUxz_QBJWLdwqdCujxrB68Zust-0DbkgVBEwHOWOxQsbe6XNcl/exec";
 
 let people = [];
-  
+
 function renderPeople() {
   const container = document.getElementById("people");
   container.innerHTML = "";
@@ -192,7 +162,6 @@ function addManual() {
   renderPeople();
 }
 
-<CodeBlock language="javascript" editable>
 async function submitPeople() {
   const status = document.getElementById("status");
   const addedBy = document.getElementById("addedBy").value.trim();
@@ -201,47 +170,15 @@ async function submitPeople() {
     alert("कृपया अपना नाम भरें।");
     return;
   }
-
-  if (!people.length || people.length > 10) {
-    alert("कम-से-कम 1 और अधिकतम 10 लोगों को जोड़ें।");
-    return;
-  }
-
+if (!people.length || people.length > 10) {
+  alert("Submit के समय लोगों की संख्या: " + people.length);
+  return;
+}
   if (people.some(p => !p.name.trim() || !p.mobile.trim())) {
     alert("सभी लोगों के नाम और मोबाइल नंबर भरें।");
     return;
   }
 
-  if (typeof html2pdf === "undefined") {
-    alert("PDF लाइब्रेरी लोड नहीं हुई। इंटरनेट जाँचें और दोबारा कोशिश करें।");
-    return;
-  }
-
-  // पोस्टर में नाम और नंबर भरें
-  document.getElementById("posterBy").textContent =
-    "Registration By: " + addedBy;
-
-  document.getElementById("posterCount").textContent =
-    "कुल सदस्य: " + people.length;
-
-  const rows = document.getElementById("posterRows");
-  rows.replaceChildren();
-
-  people.forEach((p, i) => {
-    const tr = document.createElement("tr");
-
-    [String(i + 1), p.name.trim(), p.mobile.trim()].forEach(value => {
-      const td = document.createElement("td");
-      td.textContent = value;
-      td.style.border = "1px solid #b58a42";
-      td.style.padding = "8px";
-      tr.appendChild(td);
-    });
-
-    rows.appendChild(tr);
-  });
-
-  // Google Sheet में डेटा भेजें
   const payload = new URLSearchParams();
   payload.set("payload", JSON.stringify({
     addedBy,
@@ -251,7 +188,7 @@ async function submitPeople() {
     }))
   }));
 
-  status.textContent = "रजिस्ट्रेशन भेजा जा रहा है…";
+  status.textContent = "Registration भेजा जा रहा है…";
 
   try {
     await fetch(SCRIPT_WEB_APP_URL, {
@@ -260,31 +197,17 @@ async function submitPeople() {
       body: payload
     });
 
-    // पोस्टर PDF डाउनलोड करें
-    const poster = document.getElementById("poster");
-
-    await html2pdf().set({
-      margin: 8,
-      filename: "Swarnkar_Goonj_2026_" +
-        addedBy.replace(/[^a-z0-9_-]/gi, "_") + ".pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait"
-      }
-    }).from(poster).save();
-
     status.textContent =
-      "PDF डाउनलोड शुरू हो गया। Google Sheet में रजिस्ट्रेशन की पुष्टि भी करें।";
-
-  } catch (error) {
+      "Registration request भेज दी गई है। कृपया Google Sheet में " +
+      "जाँच लें कि रिकॉर्ड सेव हुए हैं। इस ब्राउज़र मोड में " +
+      "सेव होने की पुष्टि सीधे नहीं पढ़ी जा सकती।";
+  } catch (err) {
     status.textContent =
-      "PDF बनाने में समस्या हुई: " + error.message;
+      "Request भेजने में समस्या हुई। इंटरनेट और Web App URL जाँचें।";
   }
 }
-  renderPeople();
+
+renderPeople();
 </script>
 </body>
 </html>
