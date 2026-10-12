@@ -104,26 +104,13 @@ function renderPeople() {
     people.length + " / 10 लोग चुने गए";
 }
 
+
 async function pickContacts() {
   const status = document.getElementById("status");
 
-  status.textContent =
-    "Secure context: " + window.isSecureContext +
-    "\nContact API available: " +
-    ("contacts" in navigator) +
-    "\nContact select available: " +
-    !!(navigator.contacts && navigator.contacts.select);
-
-  if (!window.isSecureContext) {
-    status.textContent +=
-      "\nError: HTTPS secure context required.";
-    return;
-  }
-
   if (!navigator.contacts ||
       typeof navigator.contacts.select !== "function") {
-    status.textContent +=
-      "\nError: This browser does not support Contact Picker.";
+    status.textContent = "Contact Picker उपलब्ध नहीं है।";
     return;
   }
 
@@ -133,15 +120,33 @@ async function pickContacts() {
       { multiple: true }
     );
 
-    status.textContent =
-      "Selected contacts: " + contacts.length;
+    const remaining = 10 - people.length;
 
-    // नीचे अपना मौजूदा contacts-processing code रखें।
+    contacts.slice(0, remaining).forEach(c => {
+      const name = Array.isArray(c.name)
+        ? (c.name[0] || "")
+        : (c.name || "");
+
+      const mobile = Array.isArray(c.tel)
+        ? (c.tel[0] || "")
+        : (c.tel || "");
+
+      if (name.trim() || mobile.trim()) {
+        people.push({
+          name: name.trim(),
+          mobile: mobile.trim()
+        });
+      }
+    });
+
+    renderPeople();
+
+    status.textContent =
+      people.length + " / 10 लोग जोड़े गए।";
 
   } catch (error) {
     status.textContent =
-      "Contact Picker error: " +
-      error.name + " — " + error.message;
+      "Contacts चुनने में समस्या: " + error.message;
   }
 }
 
@@ -163,10 +168,10 @@ async function submitPeople() {
     alert("कृपया अपना नाम भरें।");
     return;
   }
-  if (!people.length || people.length > 10) {
-    alert("कम-से-कम 1 और अधिकतम 10 लोगों को जोड़ें।");
-    return;
-  }
+if (!people.length || people.length > 10) {
+  alert("Submit के समय लोगों की संख्या: " + people.length);
+  return;
+}
   if (people.some(p => !p.name.trim() || !p.mobile.trim())) {
     alert("सभी लोगों के नाम और मोबाइल नंबर भरें।");
     return;
