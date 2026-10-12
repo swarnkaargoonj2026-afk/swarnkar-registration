@@ -36,7 +36,9 @@
     }
     #status { white-space: pre-wrap; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
+  
 <body>
 <div class="card">
   <h2>Swarnkar Goonj 2026</h2>
@@ -62,7 +64,37 @@
 
   <p id="status"></p>
 </div>
-
+<div id="people"></div>
+  <div id="poster" style="
+  width: 700px;
+  box-sizing: border-box;
+  padding: 32px;
+  background: #fff8e9;
+  color: #523b20;
+  font-family: Arial, sans-serif;
+  border: 5px solid #b58a42;
+">
+  <h1 style="text-align:center;color:#80531a">
+    SWARNKAR GOONJ 2026
+  </h1>
+  <h2 style="text-align:center">सदस्य पंजीकरण</h2>
+  <p id="posterBy"></p>
+  <p id="posterCount"></p>
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr>
+        <th style="border:1px solid #b58a42;padding:8px">क्रम</th>
+        <th style="border:1px solid #b58a42;padding:8px">नाम</th>
+        <th style="border:1px solid #b58a42;padding:8px">मोबाइल नंबर</th>
+      </tr>
+    </thead>
+    <tbody id="posterRows"></tbody>
+  </table>
+  <p style="text-align:center;margin-top:24px">
+    Swarnkar Goonj 2026 • सदस्यता अभियान
+  </p>
+</div>
+  
 <script>
 const SCRIPT_WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbxi72MDzRuwsY9atVqUxz_QBJWLdwqdCujxrB68Zust-0DbkgVBEwHOWOxQsbe6XNcl/exec";
